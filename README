@@ -1,0 +1,11 @@
+=======================================================================================================================
+The purpose of the GeoNode Monitor is to provide admins of a GeoNode instance with reports on a GeoNode Instance they
+administer. This is a simple django app embedded into the GeoNode base whose main purpose would be to log most of the 
+events that occur within the GeoNode. This events for now will be limited to basic kinds of status requests. This
+will provide users with the following information on their GeoNode.
+           * Status on Broken Pages
+           * Status on Broken Maps
+           * Mail the admin on pages and maps that are broken
+           * Check for Broken server and broken geonetwork
+           * Return number of broken layers and maps
+=======================================================================================================================
