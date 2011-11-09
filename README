@@ -9,3 +9,6 @@ will provide users with the following information on their GeoNode.
            * Check for Broken server and broken geonetwork
            * Return number of broken layers and maps
 =======================================================================================================================
+This now has support for checking broken layes. To check for broken layers add this to the maps management commands
+and run 
+django-admin.py layerstatus --settings=geonode.settings
