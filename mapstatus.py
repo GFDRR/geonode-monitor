@@ -2,12 +2,15 @@ from django.core.management.base import BaseCommand,CommandError
 from django.conf import settings
 import urllib2
 import simplejson
+from geonode.maps.models import Map,MapLayer
+from django.shortcuts import render_to_response, get_object_or_404
 
 class Command(BaseCommand):
    help = 'Report maps that have unavailable layers'
    args = '[none]'
    def handle(self, *args, **keywordargs):
       host = settings.SITEURL
+      #host = 'http://50.19.125.189/'
       url = host + 'maps/search/api'
       #method to query that maps api
       def get_url(url):
@@ -19,18 +22,47 @@ class Command(BaseCommand):
            return f
         except urllib2.HTTPError:
             print "No maps available"
+      def get_layers(mapurl):
+          #this method gets all the layers belonging to a mapi
+          print 'checking the map %s' % mapurl
+          mapid =  mapurl.split('/')
+          mapid= mapid[2]
+          map = get_object_or_404(Map,pk=mapid)          
+          layers = MapLayer.objects.filter(map=map.id)
+          for layer in layers:
+              if layer.group != 'background':
+                  #we get the layer url page
+                  layer_url = host + 'data/' + layer.name
+                  #we pass each layer to the method to check for its availability
+                  try:
+                      f = get_url(layer_url)
+                      code = f.getcode()
+                      print '%s [%s]' % (layer_url, code)
+                  except urllib2.HTTPError, e:
+                      print '%s [%s]' % (layer_url,e.code)
+
+              else:
+                  continue
+                  
+      def inspect_maps(data):
+          maps = data['rows']
+          for detail in maps:
+              mapurl = detail['detail']
+              #we now pass each and every map to get all the layers in that map
+              get_layers(mapurl)
+              
       try:
          print "checking maps"
          while(True):
              f = get_url(url)
              data = simplejson.load(f)
-             #inspect_maps(data)
+             inspect_maps(data)
              if len(data['rows']) > 0:
                 try:
                     url = host + data['next']
                     continue
                 except KeyError:
-                    print "Error on the key"
+                    #print "Error on the key"
                     break
              else:
                 break
