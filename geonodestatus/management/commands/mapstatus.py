@@ -25,16 +25,7 @@ class Command(BaseCommand):
                   #we get the layer url page
                   layer_url = host + 'data/' + layer.name
                   #we pass each layer to the method to check for its availability
-                  try:
-                      f = get_url(layer_url)
-                      try:
-                         code = f.getcode()
-                      except:
-                      	  continue
-                      print '%s [%s]' % (layer_url, code)
-                  except urllib2.HTTPError, e:
-                      print '%s [%s]' % (layer_url,code)
-
+                  ping_layers(layer_url)
               else:
                   continue
                   

@@ -8,5 +8,14 @@ def get_url(url):
      return f
    except urllib2.HTTPError, e:
      print e
+def ping_layers(layer_url):
+   try:
+      f = get_url(layer_url)
+      try:
+          code = f.getcode()
+      except:
+          return False
+      print '%s [%s]' % (layer_url, code)
+   except urllib2.HTTPError, e:
+      print '%s [%s]' % (layer_url,code)
 
-     	     

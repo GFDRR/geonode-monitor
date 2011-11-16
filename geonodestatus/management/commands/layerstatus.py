@@ -12,12 +12,6 @@ class Command(BaseCommand):
         #host = 'http://horn.rcmrd.org/'
  
         url  = host + 'data/search/api'
-        def get_url(url):
-            """Returns the response object for a given URL"""
-            request = urllib2.Request(url)
-            opener = urllib2.build_opener()
-            f = opener.open(request)
-            return f
         def totallayers(data):
             total = data['total']
             return total
@@ -30,12 +24,7 @@ class Command(BaseCommand):
             #we traverse each and evey layer to get out detailpage
             for detail in layers:
                 layer_url = detail['detail']
-                try:
-                   f = get_url(layer_url)
-                   code = f.getcode()
-                   print '%s [%s]' % (layer_url, code)
-                except urllib2.HTTPError, e:
-                   print '%s [%s]' % (layer_url,e.code)
+                ping_layers(layer_url)
         try:
             print "checking layers"
             while(True):
@@ -47,7 +36,6 @@ class Command(BaseCommand):
                        url = host + data['next'] 
                        continue
                    except KeyError:
-                       print "Error on the key"
                        break
                 else:
                    break
