@@ -12,3 +12,5 @@ will provide users with the following information on their GeoNode.
 This now has support for checking broken layes. To check for broken layers add this to the maps management commands
 and run 
 django-admin.py layerstatus --settings=geonode.settings
+
+Added a set up file to make installation easier and add it into the django installed apps
