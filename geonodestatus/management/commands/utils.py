@@ -7,7 +7,7 @@ def get_url(url):
      f = opener.open(request)
      return f
    except urllib2.HTTPError, e:
-     print e
+     print '%s [%s]' % (url,e.code)
 def ping_layers(layer_url):
    try:
       f = get_url(layer_url)
