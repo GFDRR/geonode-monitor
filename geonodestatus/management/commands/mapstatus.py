@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand,CommandError
 from django.conf import settings
 import urllib2
+from utils import *
 import simplejson
 from geonode.maps.models import Map,MapLayer
 from django.shortcuts import render_to_response, get_object_or_404
@@ -12,16 +13,6 @@ class Command(BaseCommand):
       host = settings.SITEURL
       #host = 'http://50.19.125.189/'
       url = host + 'maps/search/api'
-      #method to query that maps api
-      def get_url(url):
-        try:
-           '''Returns the response object of the maps api url'''
-           request = urllib2.Request(url)
-           opener = urllib2.build_opener()
-           f = opener.open(request)
-           return f
-        except urllib2.HTTPError:
-            print "No maps available"
       def get_layers(mapurl):
           #this method gets all the layers belonging to a mapi
           print 'checking the map %s' % mapurl
@@ -36,10 +27,13 @@ class Command(BaseCommand):
                   #we pass each layer to the method to check for its availability
                   try:
                       f = get_url(layer_url)
-                      code = f.getcode()
+                      try:
+                         code = f.getcode()
+                      except:
+                      	  continue
                       print '%s [%s]' % (layer_url, code)
                   except urllib2.HTTPError, e:
-                      print '%s [%s]' % (layer_url,e.code)
+                      print '%s [%s]' % (layer_url,code)
 
               else:
                   continue
@@ -68,3 +62,4 @@ class Command(BaseCommand):
                 break
       except CommandError,e:
          print e
+

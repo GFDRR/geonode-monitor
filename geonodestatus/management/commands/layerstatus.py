@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand,CommandError
 import urllib2
 import simplejson
+from utils import *
 from django.conf import settings
 
 class Command(BaseCommand):
