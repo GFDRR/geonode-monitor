@@ -11,7 +11,6 @@ class Command(BaseCommand):
    args = '[none]'
    def handle(self, *args, **keywordargs):
       host = settings.SITEURL
-      #host = 'http://50.19.125.189/'
       url = host + 'maps/search/api'
       def get_layers(mapurl):
           #this method gets all the layers belonging to a mapi
@@ -28,14 +27,12 @@ class Command(BaseCommand):
                   ping_layers(layer_url)
               else:
                   continue
-                  
       def inspect_maps(data):
           maps = data['rows']
           for detail in maps:
               mapurl = detail['detail']
               #we now pass each and every map to get all the layers in that map
-              get_layers(mapurl)
-              
+              get_layers(mapurl)  
       try:
          print "checking maps"
          while(True):

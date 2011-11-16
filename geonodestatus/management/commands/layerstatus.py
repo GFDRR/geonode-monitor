@@ -9,8 +9,6 @@ class Command(BaseCommand):
     args = '[none]'
     def handle(self, *args, **keywordargs):
         host = settings.SITEURL
-        #host = 'http://horn.rcmrd.org/'
- 
         url  = host + 'data/search/api'
         def totallayers(data):
             total = data['total']
