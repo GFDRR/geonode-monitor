@@ -7,7 +7,7 @@ import urllib2
 from datetime import datetime
 import simplejson
 from django.conf import settings
-
+from django.core.mail import mail_admins,send_mail
 
 class Command(BaseCommand):
 	help = 'Report maps and layers that are troublesome and log them'
@@ -40,7 +40,7 @@ class Command(BaseCommand):
                                 else:
                                    #we now deal with layers with no maps attached
                                    storebadlayer(layer,errorcode)
-                           	   
+                           	send_admin_email()   
                                    
                 def returnlayer(url):
                   #method that returns a layer
@@ -67,7 +67,14 @@ class Command(BaseCommand):
                             #print  map.map.id
                             maps.append(map.map.id)
                         return maps
-                            
+                #function to actually deal with the sending of emails
+                def send_admin_email():
+                	#we build the message
+                	layers = Badlayers.objects.all()
+                	sitename = settings.SITENAME
+                	message = 'The following layers seem to be trouble some,please have a look %s' % layers
+                	mail_admins(sitename,message,fail_silently=False)
+                	
 		#we do the check on the layers/data api
 		def inspect_layers(data):
 			layers = data['rows']
