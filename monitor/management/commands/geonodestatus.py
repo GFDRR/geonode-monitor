@@ -116,7 +116,8 @@ class Command(BaseCommand):
 				else:
 					break
                         send_admin_email()
-                        send_registry()
+                        if settings.GEONODE_REGISTRY_URL is not None:
+                                send_registry()
 		except CommandError,e:
 			print "could not connect to GeoServer. Pole"
 						
