@@ -1,5 +1,5 @@
 from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role
-from geonode.geonodestate.models import Badlayers,BadMaps
+from monitor.models import Badlayers,BadMaps
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
 from django.http import HttpResponseRedirect

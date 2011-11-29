@@ -1,7 +1,7 @@
 #means to know layers and maps that are troublesome#means to know layers and maps that are troublesome#means to know layers and maps that are troublesome
 from django.core.management.base import BaseCommand,CommandError
 from geonode.maps.models import Map, Layer, MapLayer
-from geonode.geonodestate.models import Badlayers,BadMaps,GeoNode
+from monitor.models import Badlayers,BadMaps
 from django.shortcuts import render_to_response, get_object_or_404
 import urllib2
 #from urllib2 import Request, urlopen, URLError
