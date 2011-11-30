@@ -24,7 +24,7 @@ class Command(BaseCommand):
 				request = urllib2.Request(url)
 				opener = urllib2.build_opener()
 				f = opener.open(request)
-				#print '%s [%s]' % (url,f.getcode())
+				print '%s [%s]' % (url,f.getcode())
 				return f
 			except urllib2.HTTPError, e:
 				print '%s [%s]' % (url,e.code)
@@ -111,7 +111,7 @@ class Command(BaseCommand):
 				inspect_layers(data)
 				if len(data['rows']) > 0:
 					try:
-						url = host + data['next']
+						layerapi = host + data['next']
 						continue
 					except KeyError:
 						break
