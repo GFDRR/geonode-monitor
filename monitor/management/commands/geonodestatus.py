@@ -80,6 +80,8 @@ class Command(BaseCommand):
                   registrar["geonetwork_base_url"] = settings.GEONETWORK_BASE_URL
                   registrar["layer_count"] =  Layer.objects.count()
                   registrar["map_count"] = Map.objects.count()
+                  registrar["badlayers"] = Badlayers.objects.values('layername').distinct().count()
+                  registrar["badmaps"] = Badlayers.objects.values('content_type').distinct().count()
                   regdump = simplejson.dumps(registrar)
                   data = regdump.encode('utf-8')
                   #we now perform the post
