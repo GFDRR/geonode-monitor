@@ -8,6 +8,7 @@ import urllib2
 import urllib,httplib
 from datetime import datetime
 import simplejson
+import os
 from django.conf import settings
 from django.core.mail import mail_admins,send_mail
 
@@ -68,6 +69,16 @@ class Command(BaseCommand):
                 	sitename = settings.SITENAME
                 	message = 'The following layers seem to be trouble some,please have a look %s' % layers
                 	mail_admins(sitename,message,fail_silently=False)
+                #this function returns the date of the last backup
+                def backupdate():
+                        #we start with directory of the backups
+                        filename = settings.GEONODE_BACKUP_DIR
+                        try:
+                           t = os.path.getmtime(filename)
+                           return t
+                        except:
+                           return "invalid file or no backup performed:"
+
                 #this function deals pushing logs/data to the geonode registry
                 def send_registry():
                   #we get the registry url
@@ -82,6 +93,7 @@ class Command(BaseCommand):
                   registrar["map_count"] = Map.objects.count()
                   registrar["badlayers"] = Badlayers.objects.values('layername').distinct().count()
                   registrar["badmaps"] = Badlayers.objects.values('content_type').distinct().count()
+                  registrar["backupdate"] = backupdate()
                   regdump = simplejson.dumps(registrar)
                   data = regdump.encode('utf-8')
                   #we now perform the post
