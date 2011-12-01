@@ -2,6 +2,7 @@
 from django.core.management.base import BaseCommand,CommandError
 from geonode.maps.models import Map, Layer, MapLayer
 from monitor.models import FaultyLayer
+from django.core.mail import mail_admins
 import urllib2
 #from urllib2 import Request, urlopen, URLError
 import simplejson
@@ -43,7 +44,7 @@ class Command(BaseCommand):
                   #method that returns a layer
                   layer_name = url.split('/')
                   layer_name = layer_name[4]
-                  layer = get_object_or_404(Layer,typename=layer_name)
+                  layer = Layer.objects.get(typename=layer_name)
                   return layer
                 def storebadlayer(layer,code):
                 	#we store to the database
