@@ -26,7 +26,7 @@ class Command(BaseCommand):
 				return f
 			except urllib2.HTTPError, e:
 				print '%s [%s]' % (url,e.code)
-				errorcode = e.code
+				error_code = e.code
 				#we now get maps if this layer has any
 				layermaps = check_map(url)
 				layer=returnlayer(url)
@@ -34,27 +34,27 @@ class Command(BaseCommand):
                                    #we now store layes with no maps attached
                                    for i in layermaps:
                                    	   failmap = Map.objects.get(pk=i)
-                                   	   FaultyLayer.objects.create(layername=layer.name,errorcode=errorcode,content_object=failmap)
+                                   	   FaultyLayer.objects.create(layer_name=layer.name,error_code=error_code,content_object=failmap)
                                 else:
                                    #we now deal with layers with no maps attached
-                                   storebadlayer(layer,errorcode)
+                                   storebadlayer(layer,error_code)
                                    
                 def returnlayer(url):
                   #method that returns a layer
-                  layername = url.split('/')
-                  layername = layername[4]
-                  layer = get_object_or_404(Layer,typename=layername)
+                  layer_name = url.split('/')
+                  layer_name = layer_name[4]
+                  layer = get_object_or_404(Layer,typename=layer_name)
                   return layer
                 def storebadlayer(layer,code):
                 	#we store to the database
-                	faillayer = FaultyLayer.objects.create(layername=layer.name,errorcode=code)
+                	faillayer = FaultyLayer.objects.create(layer_name=layer.name,error_code=code)
                 	return faillayer
                 	
                 def check_map(url):
                 	#pass the layer url to get the map affected
-			layername = url.split('/')
-			layername = layername[4]
-                        maplayer = MapLayer.objects.filter(name=layername)
+			layer_name = url.split('/')
+			layer_name = layer_name[4]
+                        maplayer = MapLayer.objects.filter(name=layer_name)
                         maps =  []
                         for map in maplayer:
                             maps.append(map.map.id)
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                   registrar["geonetwork_base_url"] = settings.GEONETWORK_BASE_URL
                   registrar["layer_count"] =  Layer.objects.count()
                   registrar["map_count"] = Map.objects.count()
-                  registrar["badlayers"] = FaultyLayer.objects.values('layername').distinct().count()
+                  registrar["badlayers"] = FaultyLayer.objects.values('layer_name').distinct().count()
                   registrar["badmaps"] = FaultyLayer.objects.values('content_type').distinct().count()
                   registrar["backupdate"] = backupdate()
                   regdump = simplejson.dumps(registrar)
