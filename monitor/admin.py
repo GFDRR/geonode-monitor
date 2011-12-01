@@ -1,12 +1,9 @@
-from monitor.models import Badlayers,BadMaps
+from monitor.models import FaultyLayer
 from django.contrib import admin
 
-class MapLayerInline(admin.TabularInline):
-    model = BadMaps
+class FaultyLayerAdmin(admin.ModelAdmin):
     list_display = ['layer', 'error_code']
 
-class LayerAdmin(admin.ModelAdmin):
-    inlines = [MapLayerInline]
+admin.site.register(FaultyLayer, FaultyLayerAdmin)
 
-admin.site.register(Badlayers)
 

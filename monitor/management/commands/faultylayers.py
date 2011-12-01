@@ -1,16 +1,13 @@
 #means to know layers and maps that are troublesome#means to know layers and maps that are troublesome#means to know layers and maps that are troublesome
 from django.core.management.base import BaseCommand,CommandError
 from geonode.maps.models import Map, Layer, MapLayer
-from monitor.models import Badlayers,BadMaps
-from django.shortcuts import render_to_response, get_object_or_404
+from monitor.models import FaultyLayer
 import urllib2
 #from urllib2 import Request, urlopen, URLError
-import urllib,httplib
-from datetime import datetime
 import simplejson
 import os
 from django.conf import settings
-from django.core.mail import mail_admins,send_mail
+
 
 class Command(BaseCommand):
 	help = 'Report maps and layers that are troublesome and log them'
@@ -37,7 +34,7 @@ class Command(BaseCommand):
                                    #we now store layes with no maps attached
                                    for i in layermaps:
                                    	   failmap = Map.objects.get(pk=i)
-                                   	   Badlayers.objects.create(layername=layer.name,errorcode=errorcode,content_object=failmap)
+                                   	   FaultyLayer.objects.create(layername=layer.name,errorcode=errorcode,content_object=failmap)
                                 else:
                                    #we now deal with layers with no maps attached
                                    storebadlayer(layer,errorcode)
@@ -50,7 +47,7 @@ class Command(BaseCommand):
                   return layer
                 def storebadlayer(layer,code):
                 	#we store to the database
-                	faillayer = Badlayers.objects.create(layername=layer.name,errorcode=code)
+                	faillayer = FaultyLayer.objects.create(layername=layer.name,errorcode=code)
                 	return faillayer
                 	
                 def check_map(url):
@@ -65,7 +62,7 @@ class Command(BaseCommand):
                 #function to actually deal with the sending of emails
                 def send_admin_email():
                 	#we build the message
-                	layers = Badlayers.objects.all()
+                	layers = FaultyLayer.objects.all()
                 	sitename = settings.SITENAME
                 	message = 'The following layers seem to be trouble some,please have a look %s' % layers
                 	mail_admins(sitename,message,fail_silently=False)
@@ -91,8 +88,8 @@ class Command(BaseCommand):
                   registrar["geonetwork_base_url"] = settings.GEONETWORK_BASE_URL
                   registrar["layer_count"] =  Layer.objects.count()
                   registrar["map_count"] = Map.objects.count()
-                  registrar["badlayers"] = Badlayers.objects.values('layername').distinct().count()
-                  registrar["badmaps"] = Badlayers.objects.values('content_type').distinct().count()
+                  registrar["badlayers"] = FaultyLayer.objects.values('layername').distinct().count()
+                  registrar["badmaps"] = FaultyLayer.objects.values('content_type').distinct().count()
                   registrar["backupdate"] = backupdate()
                   regdump = simplejson.dumps(registrar)
                   data = regdump.encode('utf-8')
