@@ -1,15 +1,12 @@
-from geonode.maps.models import Map, Layer, MapLayer, Contact, ContactRole, Role
 from monitor.models import Badlayers,BadMaps
-from django.contrib.contenttypes.models import ContentType
 from django.contrib import admin
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 
 class MapLayerInline(admin.TabularInline):
-	model = BadMaps
-	
+    model = BadMaps
+    list_display = ['layer', 'error_code']
+
 class LayerAdmin(admin.ModelAdmin):
-	inlines = [MapLayerInline]
+    inlines = [MapLayerInline]
 
 admin.site.register(Badlayers)
 
