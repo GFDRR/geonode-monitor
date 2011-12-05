@@ -29,8 +29,8 @@ def check_layers():
     """Tries to connect to the layer url and creates a FaultyLayer object if it can not do it.
     """
     url = urllib2.urlparse.urlsplit(settings.SITEURL)[1]
-    conn = httplib.HTTPConnection(url)
     for layer in Layer.objects.all():
+        conn = httplib.HTTPConnection(url,timeout=10) 
         conn.request("GET", layer.get_absolute_url())
         r1 = conn.getresponse()
         status_code = r1.status
@@ -44,7 +44,7 @@ def check_layers():
         if status_code not in [200, 401]:
             FaultyLayer.objects.create(layer=layer,error_code=status_code, reason=reason)
 
-    conn.close()
+        conn.close()
 
     context = {} 
     context["name"] = settings.SITENAME
