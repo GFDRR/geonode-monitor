@@ -1,14 +1,17 @@
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from geonode.maps.models import Layer
+
 
 class FaultyLayer(models.Model):
-    layer_name = models.CharField(max_length=128)
-    error_code = models.CharField(max_length=25)
-    created = models.DateTimeField(auto_now_add=True)
-    content_type = models.ForeignKey(ContentType,null=True, blank=True)
-    object_id = models.PositiveIntegerField(null=True, blank=True)
-    content_object = generic.GenericForeignKey()
+    layer = models.ForeignKey(Layer)
+    error_code = models.IntegerField()
+    check_date = models.DateTimeField(auto_now_add=True, help_text="Date the layer was known to have problems.")
+    reason = models.TextField(null=True, blank=True, help_text="Longer description about the error, if possible with a traceback.")
+
+    def affected_maps(self):
+        """Returns the maps affected for this layer being problematic.
+        """
+        self.layer.maps()
 
     def __unicode__(self):
-        return self.layer_name
+        return self.layer.name
