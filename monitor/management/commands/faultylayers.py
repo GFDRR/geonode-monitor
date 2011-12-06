@@ -6,7 +6,7 @@ from django.conf import settings
 from geonode.maps.models import Map, Layer
 from monitor.models import FaultyLayer
 import httplib
-import urllib2
+import urllib2,urllib
 import simplejson
 import os
 
@@ -28,22 +28,22 @@ def get_faulty_maps():
 def check_layers():
     """Tries to connect to the layer url and creates a FaultyLayer object if it can not do it.
     """
-    url = urllib2.urlparse.urlsplit(settings.SITEURL)[1]
+    #url = urllib2.urlparse.urlsplit(settings.SITEURL)[1]
+    url = urllib2.urlparse.urlsplit(settings.GEOSERVER_BASE_URL)[1]
     for layer in Layer.objects.all():
-        conn = httplib.HTTPConnection(url,timeout=10) 
-        conn.request("GET", layer.get_absolute_url())
+        headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
+        conn = httplib.HTTPConnection(url,timeout=10)
+        link = '/geoserver/wms/reflect?layers=' + layer.typename
+        conn.request("GET",link,"",headers)
         r1 = conn.getresponse()
         status_code = r1.status
-        #FIXME(Ariel): Try to extract a more meaningful reason for the failure if possible.
-        # by default the one saved here is meaningless. (Only an explanation of the HTTP status code
-        reason = r1.reason
-        print '%s [%s]' % (settings.SITEURL + layer.get_absolute_url(), status_code)
+        contenttype = r1.getheader('Content-Type')
+        reason = r1.read()
+        print '%s [%s]' % (link,status_code)
 
-        # Only layers with status code 200 (OK) or 401 (FORBIDDEN) are
-        # assumed to be correct.
-        if status_code not in [200, 401]:
+        # Only layers without an image content type are deemed to be irresponsible
+        if contenttype != 'image/png':
             FaultyLayer.objects.create(layer=layer,error_code=status_code, reason=reason)
-
         conn.close()
 
     context = {} 
