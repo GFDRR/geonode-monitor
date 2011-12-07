@@ -28,7 +28,6 @@ def get_faulty_maps():
 def check_layers():
     """Tries to connect to the layer url and creates a FaultyLayer object if it can not do it.
     """
-    #url = urllib2.urlparse.urlsplit(settings.SITEURL)[1]
     url = urllib2.urlparse.urlsplit(settings.GEOSERVER_BASE_URL)[1]
     for layer in Layer.objects.all():
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
@@ -39,6 +38,9 @@ def check_layers():
         status_code = r1.status
         contenttype = r1.getheader('Content-Type')
         reason = r1.read()
+        perm = layer.get_all_level_info()
+        if 'anonymous' not in  perm:
+            reason = 'No permissions to query this'
         print '%s [%s]' % (link,status_code)
 
         # Only layers without an image content type are deemed to be irresponsible
