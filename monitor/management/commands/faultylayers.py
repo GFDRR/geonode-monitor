@@ -1,7 +1,7 @@
 #means to know layers and maps that are troublesome#means to know layers and maps that are troublesome#means to know layers and maps that are troublesome
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
-from django.core.mail import mail_admins,
+from django.core.mail import mail_admins
 from django.conf import settings
 from geonode.maps.models import Map, Layer
 from monitor.models import FaultyLayer
