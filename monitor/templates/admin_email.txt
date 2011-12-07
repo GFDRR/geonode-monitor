@@ -2,7 +2,7 @@ The following layers are presenting problems in "{{ settings.SITE_NAME }}".
 
 <ul>
 {% for layer in faulty_layers %}
-<li><a href={{settings.SITE_URL}}{{layer.layer.get_absolute_url }}>{{layer.layer.name}}</a></li>
+<li><a href={%site_url%}{{layer.layer.get_absolute_url }}>{{layer.layer.name}}</a></li>
 {% endfor %}
 </ul>
 
