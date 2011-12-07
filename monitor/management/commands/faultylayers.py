@@ -68,6 +68,7 @@ def send_admin_email(context):
         return
     subject = 'Problematic layers at %s' % settings.SITENAME
     message = render_to_string('../templates/admin_email.txt', context)
+    message.attach_alternative(message, "text/html")
     mail_admins(subject, message, fail_silently=False)
 
 
