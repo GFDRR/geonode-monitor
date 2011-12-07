@@ -1,7 +1,7 @@
 #means to know layers and maps that are troublesome#means to know layers and maps that are troublesome#means to know layers and maps that are troublesome
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
-from django.core.mail import mail_admins
+from django.core.mail import mail_admins,
 from django.conf import settings
 from geonode.maps.models import Map, Layer
 from monitor.models import FaultyLayer
@@ -68,7 +68,6 @@ def send_admin_email(context):
         return
     subject = 'Problematic layers at %s' % settings.SITENAME
     message = render_to_string('../templates/admin_email.txt', context)
-    message.attach_alternative(message, "text/html")
     mail_admins(subject, message, fail_silently=False)
 
 
