@@ -29,22 +29,29 @@ def check_layers():
     """Tries to connect to the layer url and creates a FaultyLayer object if it can not do it.
     """
     url = urllib2.urlparse.urlsplit(settings.GEOSERVER_BASE_URL)[1]
+    geonodeurl = urllib2.urlparse.urlsplit(settings.SITEURL)[1]
     for layer in Layer.objects.all():
         headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
         conn = httplib.HTTPConnection(url,timeout=10)
-        link = '/geoserver/wms/reflect?layers=' + layer.typename
-        conn.request("GET",link,"",headers)
+        conn2 = httplib.HTTPConnection(geonodeurl,timeout=10)
+        wmslink = '/geoserver/wms/reflect?layers=' + layer.typename
+        detaillink = '/data/'+layer.typename
+        conn.request("GET",wmslink,"",headers)
+        conn2.request("GET", layer.get_absolute_url())
         r1 = conn.getresponse()
         status_code = r1.status
+        r2 = conn2.getresponse()
+        code = r2.status
         contenttype = r1.getheader('Content-Type')
         reason = r1.read()
         perm = layer.get_all_level_info()
         if 'anonymous' not in  perm:
             reason = 'No permissions to query this'
-        print '%s [%s]' % (link,status_code)
+        print '%s [%s]' % (wmslink,status_code)
+        print '%s [%s]' % (detaillink,code)
 
         # Only layers without an image content type are deemed to be irresponsible
-        if contenttype != 'image/png':
+        if contenttype != 'image/png' or code not in [200, 401]:
             FaultyLayer.objects.create(layer=layer,error_code=status_code, reason=reason)
         conn.close()
 
