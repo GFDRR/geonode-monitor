@@ -8,7 +8,7 @@ from geonode.maps.models import Map, Layer
 from monitor.models import FaultyLayer
 from xml.dom.minidom import parseString
 import httplib
-import urllib2,urllib
+import urllib2
 import datetime
 import os
 
@@ -39,8 +39,8 @@ def get_url(host, path, headers={}):
        response = conn.getresponse()
        status_code = response.status
        contenttype = response.getheader('Content-Type')
-       conn.close()
        reason = response.read()
+       conn.close()
        return status_code, contenttype, reason
     except Exception, e:
        return -1, None, str(e)
@@ -63,6 +63,7 @@ def check_layers():
             wmslink = '/geoserver/wms/reflect?layers=' + layer.typename
             wms_code, wms_contenttype, wms_reason = get_url(url, wmslink, headers)
             pink_tile = wms_contenttype != 'image/png'
+        
         else:
             # Avoid checking the protected ones for pink tiles.
             pink_tile = False
@@ -70,8 +71,8 @@ def check_layers():
         if detail_page_fails:
             #FIXME: Extract title from XML if possible, if not, store the whole document.
             title = None
-#           dom = parseString(detail_reason)
-#           title = dom.getElementsByTagName("title")[0]
+            dom = parseString(detail_reason)
+            title = dom.getElementsByTagName("title")[0]
             if title is not None:
                 reason = title
             else:
@@ -85,9 +86,19 @@ def check_layers():
                                    geonodeurl, layer.get_absolute_url())
             FaultyLayer.objects.create(layer=layer,error_code=detail_code,
                                        reason=reason, check_date=check_date)
+            
         else:
             print '%s (ok)'  % layer.name
 
+    faulty_layers =  FaultyLayer.objects.filter(check_date=check_date)
+
+    my_dict = {}
+    for layer in faulty_layers:
+        my_dict.setdefault(layer.layer.typename,[]).append(layer.layer.typename)
+        my_dict.setdefault(layer.layer.typename, []).append(layer.layer.get_absolute_url()) 
+        my_dict.setdefault(layer.layer.typename, []).append(layer.reason) 
+
+    #print my_dict
     context = {}
     context["name"] = settings.SITENAME
     context['url'] = settings.SITEURL
@@ -96,6 +107,7 @@ def check_layers():
     context["layer_count"] =  Layer.objects.count()
     context["map_count"] = Map.objects.count()
     context["faulty_layers"] = FaultyLayer.objects.filter(check_date=check_date)
+    context["faulty_layers_status"] = my_dict
     context["faulty_maps"] = get_faulty_maps(check_date)
     context["backup_date"] = backupdate()
     return context
