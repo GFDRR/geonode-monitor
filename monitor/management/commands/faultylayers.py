@@ -71,8 +71,8 @@ def check_layers():
         if detail_page_fails:
             #FIXME: Extract title from XML if possible, if not, store the whole document.
             title = None
-            dom = parseString(detail_reason)
-            title = dom.getElementsByTagName("title")[0]
+            #dom = parseString(detail_reason)
+            #title = dom.getElementsByTagName("title")[0]
             if title is not None:
                 reason = title
             else:
