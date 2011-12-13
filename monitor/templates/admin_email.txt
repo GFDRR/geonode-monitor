@@ -1,9 +1,9 @@
-The following maps or layers are having trouble. "{{ name }}".
+The following maps or layers are having trouble in "{{ name }}".
 
 
 {% for layer in faulty_layers %}
 {{layer.layer.title}}: {{url}}{{layer.layer.get_absolute_url }}
-{% else %}
+{% empty %}
 No layer with problems.
 {% endfor %}
 
