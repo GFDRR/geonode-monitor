@@ -15,6 +15,21 @@ is stored as being unavailable. This means most unprotected layers will be shown
 n installing all one needs to do is to add the application to the settings file. One also needs to change the settings file back up directory, please ensure This
 is the location where you regularly perform your backups
 
-django-admin.py layerstatus --settings=geonode.settings
+#. Make sure the virtualenv is activated
+#. Install from this repo using pip::
+    pip install -e git+git://github.com/GFDRR/geonode-monitor.git#egg=monitor
+#. Add this app to the ``INSTALLED_APPS`` setting in ``local_settings.py``::
+
+     INSTALLED_APPS = (
+                       ...
+                       'monitor',
+                       ....
+                      )
+
+#. Run it with the ``geonode`` binary or the ``django-admin.py`` executable::
+     geonode faultylayers
+
+   or::
+     django-admin.py faultylayers --settings=geonode.settings
 
 Added a set up file to make installation easier and add it into the django installed apps
